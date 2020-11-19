@@ -1,6 +1,10 @@
+import Data.Char 
+import Data.Either
+import Data.List
+
 --1
-enumFromTo1 :: Int -> Int ->[Int]
-enumFromTo1 x xs = [x .. xs] --constroi uma lista de um x até um xs
+enumFromTo1 :: Int -> Int -> [Int]
+enumFromTo1 x xs = [x..xs] --constroi uma lista de um x até um xs
 
 --2
 enumFromThenTo1 ::  Int -> Int -> Int -> [Int]
@@ -9,7 +13,7 @@ enumFromThenTo1 x1 x2 y = map toEnum [fromEnum x1, fromEnum x2 .. fromEnum y]
 --ou 
 
 enumFromThenTo' :: Int -> Int -> Int -> [Int]
-enumFromThenTo' x y z | z>x = x:(enumFromThenTo' (x+(y-x)) (y+(y-x)) z) --Se o z menor que x então começamos a lista com x 
+enumFromThenTo' x y z | z>x = x:(enumFromThenTo' (x+(y-x)) (y+(y-x)) z) --Se o z maior que x então começamos a lista com x e (adicionamos ao valor de x a sua subtração com y) && (a adição a y de y-x), a segunda vai resultar no número a implementar a seguir
                       | z==x = [x]
                       | otherwise = []
 
@@ -18,63 +22,61 @@ concatenacao ::  [a] -> [a] -> [a]
 concatenacao [] [] = []
 concatenacao [] l = l 
 concatenacao l [] = l
-concatenacao (x:xs) l = x : concatenacao xs l
+concatenacao (x:xs) l = x : concatenacao xs l -- Começa com o x e vai juntando o resto da lista a uma lista só
 
 --4
 exclamacao :: [a] -> Int -> a
 exclamacao (h:t) x 
- | x == 0 = h
- | otherwise = exclamacao t (x-1)
+ | x == 0 = h -- Se for  dado um 0 junto com a lista...retribui o primeiro elemento da lista 
+ | otherwise = exclamacao t (x-1) -- Caso contrário vai descontando ao x um valor até chegar a zero, aí atrivui o valor da lista onde este se encontra
 
 --5
-{-
-myreverse2 :: [a] -> [a]
-myreverse2 [] = []
-myreverse2 (x:y) = (myreverse2 y) ++ [x] 
--}
+reverse1 :: [a] -> [a]
+reverse1 [] = []
+reverse1 (x:y) = (reverse1 y) ++ [x]  -- Começa com a observação da lista começando por dar o x no último lugar
 
 --6
 take1 ::  Int -> [a] -> [a]
-take1 n  _ | n <= 0 = []
+take1 n  _ | n <= 0 = [] --Se o n for menor ou igual a zero retorna a lista vazia
 take1 _ [] = []
-take1 n (x:xs) = x : take1 (n-1) xs
+take1 n (x:xs) = x : take1 (n-1) xs -- Dependendo do valor de n, vai contruindo a lista e retirando um valor a n a cada vez que o corre
 
 --7
 drop1 ::  Int -> [a] -> [a]
-drop1 n xs | n <= 0 = xs
+drop1 n xs | n <= 0 = xs --Se o n for menor ou igual a zero retorna a o xs inteiro
 drop1 _ [] = []
-drop1 n (x:xs) = drop1 (n-1) xs
+drop1 n (x:xs) = drop1 (n-1) xs -- Dependendo do valor de n vai retirando elementos à lista até o n=0
 
 --8
 zip1 ::  [a] -> [b] -> [(a,b)]
 zip1 [] [] = []
-zip1 (x:xs) (y:ys) = (x,y) : zip1 xs ys
+zip1 (x:xs) (y:ys) = (x,y) : zip1 xs ys -- Junta os dois primeiros elementos de duas listas e faz o mesmo para os próximos elementos
 
 --9
 elem1 ::  Eq a => a -> [a] ->Bool
 elem1 _ []          = False
 elem1 a (h:t)
-        | a == h    = True
+        | a == h    = True --Verifica se o elemento antes da lista é igual ao primeiro elemento da lista, se n for vai verificar no resto da lista
         | otherwise = elem1 a t 
 
 --10
 replicate1 :: Int -> a -> [a]
 replicate1 0 _  = []
-replicate1 x y  = y : replicate1 (x-1) y 
+replicate1 x y  = y : replicate1 (x-1) y -- Pega no y e vai replicá-lo x vezes, ou seja, a cada vez que o replica vai tirar uma unidade a x
 
 --11
 intersperse1 :: a -> [a] ->[a]
 intersperse1 _ []    = []
 intersperse1 _ [a]   = [a]
-intersperse1 x (h:t) = h : x : intersperse1 x t
+intersperse1 x (h:t) = h : x : intersperse1 x t -- Pega no elemento x e vai intercalando-o no meio dos outros elementos da lista
 
 --12 MT FDD
 group1 :: Eq a => [a] -> [[a]]
 group1 [] = []
 group1 [a] = [[a]]
 group1 (x:xs)
-       | x == head (c1) = (x:c1) : c2
-       | otherwise = [x]: (c1:c2)
+       | x == head (c1) = (x:c1) : c2 --Se x for igual ao elemento a seguir ele junta-o a ele formando uma lista, verifica o resto da lista para ver se há mais elementos iguais consecutivos
+       | otherwise = [x]: (c1:c2) --Se n for, não junta e faz uma lista apenas de x e  vai procurar elementos iguais consecutivos
          where 
            (c1:c2) = group1 xs
 
@@ -82,18 +84,18 @@ group1 (x:xs)
 concat1 ::  [[a]] -> [a]
 concat1 [] = [] 
 concat1 (h:t) 
-        |length h == 0 = concat1 t
-        | otherwise = h ++ concat1 t
+        |length h == 0 = concat1 t --Se o length de h for igual a 0, junta as listas mais pequenas numa só sem o h
+        | otherwise = h ++ concat1 t --Se o h existir, ou seja se length de h > 0, continua a juntar as listas mas desta vez com o h
 
 --14
 inits1 :: [a] -> [[a]]
 inits1 [] = [[]]
-inits1 l = inits1 (init l) ++ [l]    
+inits1 l = inits1 (init l) ++ [l] -- Acaba com a lista l na totalidade, nos elementos anteriores vai tirando o último valor à lista, até chegar a []
 
 --15
 tails1 :: [a] -> [[a]] 
 tails1 [] = [[]]
-tails1 l = l:(tails1 (tail l)) 
+tails1 l = l:(tails1 (tail l)) -- Começa com a lista l na totalidade e vai tirando o primeiro elemento até ficar com []
 
 --16
 isPrefixOf1 :: Eq a => [a]-> [a] -> Bool
@@ -126,10 +128,12 @@ elemIndices1 n l | n == last l = elemIndices1 n (init l) ++ [(length l-1)] -- Ve
                  | otherwise = elemIndices1 n (init l) -- se o último elemento n for igual ele vai ver todos os outros da mesma forma que fez em cima
 
 --20
+nub1 :: Eq a => [a] -> [a]
+nub1 [] = []
+nub1 (x:xs) = x: nub1 (filter (/=x) xs) --Põe o x no ínicio da lista e vai verificar no resto da lista se existem mais x, se existirem elimina-os, faz isso para todos os elementos que sejam iguais
 
---nub1 :: Eq a => [a] -> [a]
---nub1 [] = []
---nub1 (h:t) 
+--Input: filter (>5) [1,2,3,4,5,6,7,8]
+--Output: [6,7,8]
 
 --21
 delete1 :: Eq a => a -> [a] -> [a]
@@ -236,16 +240,14 @@ iSort [] = []
 iSort (x:[]) = [x]
 iSort (x:xs) = insert1 x (iSort xs) -- Ordena uma lista, ou seja vai nr a nr usando o insert (que ordena um nr numa determinada lista) e ordena a lista
 
---35 DUVIDA
-{-
-menor :: String -> String -> Bool --menor "sai" "saiu" corresponde a True enquanto que menor "programacao" "funcional" corresponde a False.
+--35 IMPORT DATA,CHAR ??
+menor :: String -> String -> Bool --menor "sai" "saiu" corresponde a True enquanto que menor "programacao" "funcional" corresponde a False. 
 menor "" "" = False
 menor "" _ = True
 menor _ "" = False
-menor (x:xs) (y:ys) | (ord x) < (ord y) = True
-                    | (ord x) > (ord y) = False
-                    | otherwise = menor xs ys
--}
+menor (x:xs) (y:ys) | (ord x) < (ord y) = True --Vê se o x vem antes de y no dicionário se vier é vdd
+                    | (ord x) > (ord y) = False -- Se não vier é falso
+                    | otherwise = menor xs ys --Se forem iguais vai ao resto da string/palavra analisar a  diferença entre as duas, qwuando envontrar determina se é maior ou menor, ie, False e True respetivamente
 
 --36
 elemMSet :: Eq a => a -> [(a,Int)] -> Bool
@@ -279,22 +281,23 @@ removeMSet a ((x,y):xs) | a == x && y>1 = ((x,y-1):xs) -- O a=x e o y>1 apenas s
                         | otherwise = (x,y) : removeMSet a xs -- O a =\ x por isso analisa o resto da lista
 
 --41 DUVIDA
-{-}
-constroiMSet :: Ord a => [a] -> [(a,Int)] -- constroiMSet "aaabccc" corresponde a [(’a’,3), (’b’,1), (’c’,3)]
-constroiMSet [] = []
-constroiMSet (x:xs) = contador 1 (x:xs)
-                        where contador n [] = []
+{-
+constroiMSet' :: Ord a => [a] -> [(a,Int)] -- constroiMSet "aaabccc" corresponde a [(’a’,3), (’b’,1), (’c’,3)]
+constroiMSet' [] = []
+constroiMSet' (x:xs) = contador 1 (x:xs)
+                       where contador n [] = []
                              contador n (x:[]) = [(x:n)]
                              contador n (x:y:xs) | x==y = contador (n+1) (y:xs)
                                                  | otherwise = (x,n) : (contador 1 (y:xs))
 -}
+
 --42 DUVIDA
 --partitionEithers :: [Either a b] -> ([a],[b])
 
 --43 DUVIDA
---catMaybes :: [Maybe a] -> [a]
---catMaybes (Just a : xs) = a:(catMaybes xs)
---catMaybes (Nothing xs) = catMaybes xs
+catMaybes :: [Maybe a] -> [a]
+catMaybes (Just a : xs) = a:(catMaybes xs)
+catMaybes (Nothing xs) = catMaybes xs
 
 --44
 data Movimento = Norte | Sul | Este | Oeste
@@ -308,18 +311,13 @@ posicao (x,y) (Este:xs) = posicao ((x+1),y) xs
 posicao (x,y) (Oeste:xs) = posicao ((x-1),y) xs
 
 --45
-{-}
-data Movimento = Norte | Sul | Este | Oeste 
-       deriving Show
-
-caminho :: (Int,Int) -> (Int,Int) -> [Movimento]
-caminho (x,y) (x,y) = []
-caminho (x,y) (u,z) | x == u && y == z = (x,y) (u,z) 
-                    | x < u = (Este) : caminho ((x+1),y) (u,z)
-                    | x > u = (Oeste) : caminho ((x-1),y) (u,z)
-                    | y < z = (Norte) : caminho (x,(y+1) (u,z) 
-                    | y > z = (Sul) : caminho (x,(y-1)) (u,z)
--}
+caminho ::  (Int,Int) -> (Int,Int) -> [Movimento]
+caminho (xi,yi) (xf,yf)
+    | xf > xi = [Este] ++ caminho (xi+1,yi) (xf, yf) --Basicamente ele recebe dois conjuntos de coordenadas, inicial e final, analisa os dois e descreve o tipo de movimento que foi feito de um para o outro
+    | xf < xi = [Oeste] ++ caminho (xi-1,yi) (xf,yf)
+    | yf > yi = [Norte] ++ caminho (xi,yi+1) (xf,yf)
+    | yf < yi = [Sul] ++ caminho (xi,yi-1) (xf,yf)
+    | otherwise = []
 
 --46
 vertical :: [Movimento] -> Bool
@@ -329,22 +327,17 @@ vertical (Sul:xs) = vertical xs
 vertical (x:xs) = False
 
 --47 DUVIDA
-{-
 data Posicao = Pos Int Int
-    deriving Show
+       deriving Show
 
 maisCentral :: [Posicao] -> Posicao -- dada uma lista nao vazia de posicoes, determina a que esta mais perto da origem (note que as coordenadas de cada pontos ao numeros inteiros)
 maisCentral [] = error "lista vazia"
 maisCentral (Pos a b : []) = (Pos a b)
-maisCentral ((Pos x1 y1):(Pos x2 y2):xs) | dist' (Pos x1 y1) <= dist' (Pos x2 y2) = maisCentral ((Pos x1 y1):xs)
-                                     | dist' (Pos x1 y1) > dist' (Pos x2 y2) = maisCentral ((Pos x2 y2):xs)
-                                                                                   where dist' (Pos x y) = sqrt (fromIntegral(y^2 + x^2))
--}
+maisCentral ((Pos x1 y1):(Pos x2 y2):xs) | dist' (Pos x1 y1) <= dist' (Pos x2 y2) = maisCentral ((Pos x1 y1):xs) --Se a dist do primeiro for menor do que a do segundo vai comparar o primeiro ao resto da lista
+                                         | dist' (Pos x1 y1) > dist' (Pos x2 y2) = maisCentral ((Pos x2 y2):xs)
+                                                                                   where dist' (Pos x y) = sqrt (fromIntegral(y^2 + x^2)) --Função dist é basicamente a fórmula para calcular a distância do ponto ao centro usualmente usada em matemática
 
 --48 Não está a funcionar ???!
-data Posicao = Pos Int Int
-    deriving Show
-
 vizinhos :: Posicao -> [Posicao] -> [Posicao]
 vizinhos (Pos x y) ((Pos x1 y1):xs)  | x==x1 && y==(y1+1) = (Pos x1 y1):(vizinhos (Pos x y) xs) --Analisa a função e vê se há vizinhaça na unidade mais próxima, seja no x ou no y 
                                      | x==x1 && y==(y1-1) = (Pos x1 y1):(vizinhos (Pos x y) xs)
@@ -355,10 +348,11 @@ vizinhos (Pos x y) ((Pos x1 y1):xs)  | x==x1 && y==(y1+1) = (Pos x1 y1):(vizinho
 --49
 mesmaOrdenada :: [Posicao] -> Bool
 mesmaOrdenada ((Pos x y):[]) = True
-mesmaOrdenada ((Pos x1 y1):(Pos x2 y2):xs) | y1 == y2 = mesmaOrdenada ((Pos x1 y1):xs)
+mesmaOrdenada ((Pos x1 y1):(Pos x2 y2):xs) | y1 == y2 = mesmaOrdenada ((Pos x1 y1):xs) --Verifica se a ordenada de um é igual à do outro, se for vai ver o resto da lista para comparar 
                                            | otherwise = False
 
 --50 --DUVIDA
 data Semaforo = Verde | Amarelo | Vermelho
     deriving Show
+
 
