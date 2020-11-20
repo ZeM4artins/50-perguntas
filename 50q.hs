@@ -70,7 +70,7 @@ intersperse1 _ []    = []
 intersperse1 _ [a]   = [a]
 intersperse1 x (h:t) = h : x : intersperse1 x t -- Pega no elemento x e vai intercalando-o no meio dos outros elementos da lista
 
---12 MT FDD
+--12 
 group1 :: Eq a => [a] -> [[a]]
 group1 [] = []
 group1 [a] = [[a]]
@@ -84,8 +84,9 @@ group1 (x:xs)
 concat1 ::  [[a]] -> [a]
 concat1 [] = [] 
 concat1 (h:t) 
-        |length h == 0 = concat1 t --Se o length de h for igual a 0, junta as listas mais pequenas numa só sem o h
+        | length h == 0 = concat1 t --Se o length de h for igual a 0, junta as listas mais pequenas numa só sem o h
         | otherwise = h ++ concat1 t --Se o h existir, ou seja se length de h > 0, continua a juntar as listas mas desta vez com o h
+
 
 --14
 inits1 :: [a] -> [[a]]
@@ -95,13 +96,12 @@ inits1 l = inits1 (init l) ++ [l] -- Acaba com a lista l na totalidade, nos elem
 --15
 tails1 :: [a] -> [[a]] 
 tails1 [] = [[]]
-tails1 l = l:(tails1 (tail l)) -- Começa com a lista l na totalidade e vai tirando o primeiro elemento até ficar com []
+tails1 l = [l] ++ (tails1 (tail l)) -- Começa com a lista l na totalidade e vai tirando o primeiro elemento até ficar com []
 
 --16
 isPrefixOf1 :: Eq a => [a]-> [a] -> Bool
 isPrefixOf1 [] _ = True
 isPrefixOf1 (a:b) (c:d)
-          | length (a:b) > length (c:d) = False
           | a == c = isPrefixOf1 b d -- Verifica se a cabeça da lista é igual à da outra e depois verifica o resto da lista caso seja preciso
           | otherwise = False
 
@@ -109,7 +109,6 @@ isPrefixOf1 (a:b) (c:d)
 isSuffixOf1 :: Eq a => [a]-> [a] -> Bool
 isSuffixOf1 []  _ = True
 isSuffixOf1 l l2
-          | length l > length l2 = False
           | last l == last l2 = isSuffixOf1 (init l) (init l2) -- Dá o último da lista l e depois procura todos menos o último (função init), para verificar se é verdadeiro ou não
           | otherwise = False
 
@@ -124,8 +123,9 @@ isSubsequenceOf1 (a:b) (c:d)
 --19
 elemIndices1 :: Eq a => a -> [a] -> [Int]
 elemIndices1 n [] = []
-elemIndices1 n l | n == last l = elemIndices1 n (init l) ++ [(length l-1)] -- Verifica se o último nr da lista é igual ao n e dps vai verififcar oresto da lista metendo-os numa lista
+elemIndices1 n l | n == last l = elemIndices1 n (init l) ++ [(length l-1)] -- Verifica se o último nr da lista é igual ao n e dps vai verififcar o resto da lista metendo-os numa lista
                  | otherwise = elemIndices1 n (init l) -- se o último elemento n for igual ele vai ver todos os outros da mesma forma que fez em cima
+
 
 --20
 nub1 :: Eq a => [a] -> [a]
@@ -146,7 +146,7 @@ barrabarra :: Eq a => [a] -> [a]-> [a] --[1,2,3,4,5,1] [1,5] corresponde a [2,3,
 barrabarra [] _ = []
 barrabarra (x:xs) [] = (x:xs) 
 barrabarra (x:xs) (y:ys) | x == y = barrabarra xs ys -- Verifica se o primeiro é igual nos dois e neste caso como é elimina-o, depois verfica as igualdades nas duas listas
-                         | otherwise = y : barrabarra ys (x:xs) -- Se o primeiro não for igual pega na lista completa e continua a procurar no ys da outra
+                         | otherwise = x : barrabarra xs (y:ys) -- Se o primeiro não for igual pega na lista completa e continua a procurar no ys da outra
 
 --23
 union1 :: Eq a => [a] -> [a]-> [a]
@@ -156,13 +156,15 @@ union1 [] l = l
 union1 (x:xs) (y:ys) | elem y (x:xs) = union1 (x:xs) ys  -- Verifica se o y está em alguma parte da lista x:xs, neste caso é vdd, logo, vai verificar o resto para a lista ys e une a lista x:xs com alguns elementos de ys
                      | otherwise = (union1 (x:xs) ys) ++ [y] -- Como y n pertence a x:xs ele verifica os outros elementos de ys unindo-os depois com y
 
+
 --24
 intersect1 :: Eq a => [a] ->[a] -> [a] -- [1,1,2,3,4] [1,3,5] corresponde a [1,1,3] apenas mete no resultado os elementos da primeira lista que pertencem à segunda
 intersect1 [] [] = []
 intersect1 _ [] = []
 intersect1 [] _ = []
-intersect1 (x:xs) (y:ys) | elem x (y:ys) = x:(intersect1 (y:ys) xs) -- Verifica se o x pertence ao y:ys, confirmando-se vai procurar no xs mais elementos iguais aos da lista y:ys
-                         | otherwise = intersect1 (y:ys) xs
+intersect1 (x:xs) (y:ys) | x==y = x:(intersect1 xs (y:ys)) -- Verifica se o x pertence ao y:ys, confirmando-se vai procurar no xs mais elementos iguais aos da lista y:ys
+                         | otherwise = intersect1 xs (y:ys)
+
 
 --25
 insert1 :: Ord a => a -> [a] -> [a] --insert 25 [1,20,30,40] corresponde a [1,20,25,30,40] vai nr a nr procurar um maior do que ele para se colocar antes desse
@@ -281,23 +283,33 @@ removeMSet a ((x,y):xs) | a == x && y>1 = ((x,y-1):xs) -- O a=x e o y>1 apenas s
                         | otherwise = (x,y) : removeMSet a xs -- O a =\ x por isso analisa o resto da lista
 
 --41 DUVIDA
-{-
-constroiMSet' :: Ord a => [a] -> [(a,Int)] -- constroiMSet "aaabccc" corresponde a [(’a’,3), (’b’,1), (’c’,3)]
-constroiMSet' [] = []
-constroiMSet' (x:xs) = contador 1 (x:xs)
-                       where contador n [] = []
-                             contador n (x:[]) = [(x:n)]
-                             contador n (x:y:xs) | x==y = contador (n+1) (y:xs)
-                                                 | otherwise = (x,n) : (contador 1 (y:xs))
--}
+constroiMSet :: Ord a => [a] -> [(a,Int)]
+constroiMSet [] = []
+constroiMSet (x:xs) = aux xs x 1
+    where
+        aux [] elem num = [(elem, num)]
+        aux (y:ys) elem num
+            | y == elem = aux ys elem (num+1) --Se o y = elem 
+            | otherwise = (elem, num):aux ys y 1
+
+constroiMset2:: Ord a => [a] -> [(a,Int)]
+constroiMset2 [] = []
+constroiMset2 (x:xs) = (x,1+length(filter (==x) (xs))) : constroiMset2 (filter (/=x) (xs)) -- Começa com x e adiciona 1 ao comprimento, se encontrar algum elemento igual a x em xs
 
 --42 DUVIDA
---partitionEithers :: [Either a b] -> ([a],[b])
+partitionEithers1 :: [Either a b] -> ([a],[b])
+partitionEithers1 [] = ([],[])
+partitionEithers1 ((Left a):xs) = (a:nx, ny) -- Se for à esquerda acrescenta o a à esquerda de tudo
+    where (nx,ny) = partitionEithers1 xs
+partitionEithers1 ((Right a):xs) = (nx,a:ny) --Se for à direita acrescenta à direita do primeiro elemento
+    where (nx,ny) = partitionEithers1 xs
 
 --43 DUVIDA
 catMaybes :: [Maybe a] -> [a]
-catMaybes (Just a : xs) = a:(catMaybes xs)
-catMaybes (Nothing xs) = catMaybes xs
+catMaybes [] = []
+catMaybes (x:xs) = 
+    case x of Nothing -> catMaybes xs -- Se x não for igual a nada vamos analisar o xs
+              Just x -> x:catMaybes xs -- Caso tenha alguma coisa começamos com o  x e analisamos o resto 
 
 --44
 data Movimento = Norte | Sul | Este | Oeste
@@ -345,6 +357,12 @@ vizinhos (Pos x y) ((Pos x1 y1):xs)  | x==x1 && y==(y1+1) = (Pos x1 y1):(vizinho
                                      | y==y1 && x==(x1-1) = (Pos x1 y1):(vizinhos (Pos x y) xs)
                                      | otherwise = vizinhos (Pos x y) xs -- Caso não haja nada entre aqueles dois, vai procurar no resto da lista
 
+vizinhos2 :: Posicao -> [Posicao] -> [Posicao]
+vizinhos2 _ [] = []
+vizinhos2 (Pos x1 y1) ((Pos x2 y2):xs)
+    | abs (x1-x2) <= 1 && abs (y1-y2) <= 1 = (Pos x2 y2) : vizinhos2 (Pos x1 y1) xs
+    | otherwise = vizinhos2 (Pos x1 y1) xs
+
 --49
 mesmaOrdenada :: [Posicao] -> Bool
 mesmaOrdenada ((Pos x y):[]) = True
@@ -355,4 +373,12 @@ mesmaOrdenada ((Pos x1 y1):(Pos x2 y2):xs) | y1 == y2 = mesmaOrdenada ((Pos x1 y
 data Semaforo = Verde | Amarelo | Vermelho
     deriving Show
 
+interseccaoOK ::  [Semaforo] -> Bool
+interseccaoOK [] = True
+interseccaoOK s = if (aux s 0) <= 1 then True else False --Testa o valor que vem da função auxiliar
+    where
+        aux [] ac = ac
+        aux (x:xs) ac = 
+            case x of Vermelho -> aux xs (ac+1) -- se for Vermelho vai acrescentar um valor
+                      n -> aux xs (ac) --caso contrário n adiciona nada
 
