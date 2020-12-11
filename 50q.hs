@@ -282,7 +282,7 @@ removeMSet a ((x,y):xs) | a == x && y>1 = ((x,y-1):xs) -- O a=x e o y>1 apenas s
                         | a == x && y==1 = (xs) -- Como neste caso ia ficar zero, tira-se a dupla inteira
                         | otherwise = (x,y) : removeMSet a xs -- O a =\ x por isso analisa o resto da lista
 
---41 DUVIDA
+--41 
 constroiMSet :: Ord a => [a] -> [(a,Int)]
 constroiMSet [] = []
 constroiMSet (x:xs) = aux xs x 1
